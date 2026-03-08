@@ -1,271 +1,202 @@
 # Mission Control 🎯
 
-> **A pure visualization and management dashboard for OpenClaw agents - 100% OpenClaw native, zero custom engine**
+> **OpenClaw-native metadata and coordination layer - V2 Production Ready**
 
-## 🎯 Mission Statement
+## Overview
 
-Mission Control is a **read-only dashboard** that visualizes and monitors your OpenClaw agent ecosystem. We strictly adhere to OpenClaw's native architecture:
+Mission Control provides a metadata and visualization layer for OpenClaw agents while maintaining strict separation of concerns. OpenClaw owns runtime execution; Mission Control owns metadata and coordination.
 
-- **NO custom task routing** - OpenClaw handles all routing
-- **NO agent management logic** - OpenClaw manages agents
-- **NO task creation engine** - OpenClaw creates and assigns tasks
-- **ONLY visualization and monitoring** - We display what OpenClaw is already doing
+## 🚀 Quick Start
 
-## 🏗️ Architecture Overview
+```bash
+# Clone repository
+git clone https://github.com/yourusername/mission-control.git
+cd mission-control
+
+# Start Frontend (V1 Dashboard)
+npm install
+npm run dev
+# Visit http://localhost:3000
+
+# Start Backend (V2 API)
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python main_test.py
+# Visit http://localhost:8001/docs
+```
+
+## Architecture Evolution
+
+### V1: Read-Only Dashboard ✅
+- Visualization of OpenClaw agents
+- Static configuration
+- WebSocket monitoring
+- **Status: Complete**
+
+### V2: Metadata & Coordination ✅
+- FastAPI backend with PostgreSQL
+- Task → Job → Session model
+- SSE event streaming
+- OpenClaw adapter pattern
+- **Status: Complete**
+
+### V3: Enterprise Features 🚧
+- Multi-cluster support
+- Approval workflows
+- Resource provisioning
+- Advanced orchestration
+- **Status: In Progress**
+
+## System Architecture
 
 ```mermaid
 graph TB
-    subgraph "OpenClaw Core (Native)"
-        OC[OpenClaw Gateway<br/>:18789]
-        OA[Agent Registry<br/>openclaw.json]
-        OT[Task System]
-        OW[Workspaces<br/>Local Files]
+    subgraph "Mission Control V2"
+        FE[Frontend<br/>Next.js:3000]
+        API[Backend API<br/>FastAPI:8000]
+        DB[(PostgreSQL<br/>Metadata)]
+        REDIS[(Redis<br/>Events)]
     end
-
-    subgraph "Mission Control (Visualization Only)"
-        UI[Next.js Dashboard<br/>:3000]
-        SC[Static Config<br/>Agent Hierarchy]
-        VL[View Layer<br/>Read-Only]
+    
+    subgraph "OpenClaw"
+        GW[Gateway<br/>:18789]
+        AGENTS[Agent<br/>Runtime]
+        WORK[Workspaces]
     end
-
-    subgraph "Data Flow"
-        OC -->|WebSocket<br/>Events| UI
-        OA -->|Static Copy| SC
-        OW -->|File Watch<br/>Optional| VL
-    end
-
-    subgraph "User Interaction"
-        USER[User]
-        CLI[OpenClaw CLI]
-        USER -->|openclaw task| CLI
-        CLI -->|Creates Tasks| OT
-        USER -->|View Only| UI
-    end
-
-    style OC fill:#2E7D32
-    style OA fill:#2E7D32
-    style OT fill:#2E7D32
-    style OW fill:#2E7D32
-    style UI fill:#1976D2
-    style SC fill:#1976D2
-    style VL fill:#1976D2
-    style USER fill:#FFA726
-    style CLI fill:#FFA726
+    
+    FE -->|REST| API
+    API -->|Store| DB
+    API -->|PubSub| REDIS
+    API -->|Request| GW
+    GW -->|Events| API
+    GW --> AGENTS
+    AGENTS --> WORK
+    
+    style FE fill:#1976D2
+    style API fill:#FF6F00
+    style GW fill:#2E7D32
 ```
 
-## 🚀 What Mission Control Does
+## Core Principles
 
-### ✅ DOES (Visualization & Monitoring)
-- **Displays** agent hierarchy and organization structure
-- **Shows** task status and distribution across agents
-- **Monitors** agent workload and activity
-- **Visualizes** the multi-agent ecosystem
-- **Provides** quick OpenClaw CLI command references
-- **Tracks** system health and metrics
+1. **OpenClaw Native**: Mission Control NEVER becomes a custom runtime
+2. **Reference-Based**: Store references to OpenClaw objects, not the objects
+3. **Request-Only**: Mission Control requests, OpenClaw executes
+4. **Event-Driven**: React to OpenClaw events, don't control them
 
-### ❌ DOES NOT (Remains OpenClaw Native)
-- Create or route tasks (use `openclaw task`)
-- Manage agent lifecycle (use `openclaw agent`)
-- Store task data (OpenClaw uses filesystem)
-- Implement custom routing logic
-- Replace any OpenClaw functionality
+## Features
 
-## 🛠️ Implementation Approach
+### Current (V2)
+- ✅ Agent metadata management
+- ✅ Task and job tracking
+- ✅ Real-time event streaming (SSE)
+- ✅ RESTful API with OpenAPI docs
+- ✅ PostgreSQL for metadata storage
+- ✅ Redis for event pub/sub
+- ✅ Docker Compose setup
+- ✅ Cloud-ready architecture
 
-### Current Implementation
-```mermaid
-graph LR
-    subgraph "Data Sources"
-        CONFIG[Static Agent Config<br/>Hardcoded in hooks/useOpenClaw.ts]
-        GATEWAY[OpenClaw Gateway<br/>ws://127.0.0.1:18789]
-        FILES[Workspace Files<br/>Optional - Not for Cloud]
-    end
+### Coming (V3)
+- 🚧 Approval workflows
+- 🚧 Artifact management
+- 🚧 Multi-cluster support
+- 🚧 Resource provisioning
+- 🚧 Advanced monitoring
 
-    subgraph "Mission Control"
-        HOOK[useOpenClaw Hook]
-        PAGES[Next.js Pages]
-        COMP[React Components]
-    end
-
-    CONFIG -->|Load on Mount| HOOK
-    GATEWAY -.->|Future: WebSocket<br/>When API Available| HOOK
-    FILES -.->|Local Only<br/>Not Cloud-Ready| HOOK
-    HOOK -->|State| PAGES
-    PAGES -->|Props| COMP
-```
-
-### Cloud-Ready Architecture
-- **No file system dependencies** - Works without local file access
-- **Static configuration** - Agent structure embedded for reliability
-- **Gateway-ready** - Prepared for OpenClaw WebSocket API when available
-- **Stateless** - No database, no persistent storage
-- **Read-only** - Never modifies OpenClaw state
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 mission-control/
-├── app/                      # Next.js 14 App Router
-│   ├── agents/              # Agent listing page
-│   │   └── [id]/           # Individual agent detail pages
-│   ├── hierarchy/          # Organization structure view
-│   ├── kanban/            # Task board visualization
-│   └── monitoring/        # System health dashboard
-├── components/             # React components
-│   └── AgentMonitor.tsx  # Agent status component
-├── hooks/                  # Custom React hooks
-│   ├── useOpenClaw.ts    # Main OpenClaw integration
-│   └── useAgentData.ts   # Agent data management
-└── server/                # Server utilities (optional)
-    └── watcher.js        # File watcher (local only)
+├── frontend/          # Next.js dashboard (V1)
+├── backend/           # FastAPI server (V2)
+│   ├── api/          # REST endpoints
+│   ├── models/       # Database models
+│   ├── services/     # Business logic
+│   └── main.py       # Application entry
+├── docs/             # Documentation
+├── infra/            # Infrastructure configs
+└── docker-compose.yml
 ```
 
-## 🚦 Getting Started
+## API Documentation
 
-### Prerequisites
-- Node.js 22+
-- OpenClaw installed and configured
-- OpenClaw gateway running (`openclaw gateway`)
+### Interactive Docs
+Visit http://localhost:8000/docs for Swagger UI
 
-### Installation
+### Key Endpoints
+- `GET /health` - Health check
+- `GET /api/v1/agents` - List agents
+- `POST /api/v1/tasks` - Create task
+- `GET /api/v1/stream` - SSE events
+
+## Deployment
+
+### Local Development
 ```bash
-# Clone the repository
-git clone https://github.com/durdan/mission-control.git
-cd mission-control
+# Using Docker Compose
+docker-compose up -d
 
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
+# Or run individually
+npm run dev           # Frontend
+python backend/main.py # Backend
 ```
 
-### Environment Setup
-No environment variables needed! Mission Control uses:
-- OpenClaw gateway on `127.0.0.1:18789` (default)
-- Static agent configuration (embedded)
-
-## 🎮 Usage
-
-### Viewing Agents
-Navigate to `http://localhost:3000` to see:
-- Agent hierarchy visualization
-- Current task assignments
-- Agent status and workload
-
-### Creating Tasks
-Mission Control **does not create tasks**. Use OpenClaw CLI:
+### Google Cloud Platform
 ```bash
-# Assign task to specific agent
-openclaw task "Build feature X" --agent forge
-
-# Let OpenClaw route automatically
-openclaw task "Analyze security requirements"
+# Deploy to Cloud Run
+gcloud run deploy mission-control-backend --source backend
+gcloud run deploy mission-control-frontend --source frontend
 ```
 
-### Monitoring
-- `/agents` - View all agents and their status
-- `/agents/[id]` - Detailed view of specific agent
-- `/hierarchy` - Organization structure
-- `/kanban` - Task board view
-- `/monitoring` - System health metrics
+See [Infrastructure Guide](infra/README.md) for detailed deployment instructions.
 
-## 🏗️ Technical Decisions
+## Configuration
 
-### Why Static Configuration?
-```javascript
-// hooks/useOpenClaw.ts
-const staticAgents = [
-  {
-    id: 'ceo',
-    name: 'CEO Atlas',
-    workspace: '/Users/durdan/orchestrators/ceo-atlas',
-    model: 'openrouter/anthropic/claude-sonnet-4.5'
-  },
-  // ... more agents
-];
-```
-- **Always available** - Works even if OpenClaw is offline
-- **Fast loading** - No API calls needed
-- **Cloud-ready** - No file system access required
-- **Reliable** - Matches actual OpenClaw configuration
-
-### Why No Custom Engine?
-- **OpenClaw is the engine** - We don't reinvent what already works
-- **Single source of truth** - OpenClaw manages all agent logic
-- **Maintainability** - Less code to maintain
-- **Compatibility** - Always works with OpenClaw updates
-
-## 📊 Agent Organization Example
-
-```mermaid
-graph TD
-    CEO[CEO Atlas<br/>Global Orchestrator]
-    
-    CEO --> ENG[Engineering Atlas<br/>SDLC Orchestrator]
-    CEO --> GROWTH[Growth Atlas<br/>Marketing Orchestrator]
-    CEO --> PROD[Product Atlas<br/>Discovery Orchestrator]
-    CEO --> OPS[Ops Atlas<br/>Reliability Orchestrator]
-    
-    ENG --> FORGE[Forge<br/>Full-Stack Dev]
-    ENG --> TESS[Tess<br/>QA Engineer]
-    ENG --> ARC[Arc<br/>Architect]
-    ENG --> GUARD[Guardian<br/>Security]
-    
-    GROWTH --> BEACON[Beacon<br/>Content]
-    GROWTH --> ORBIT[Orbit<br/>SEO]
-    GROWTH --> PULSE[Pulse<br/>CRM]
-    
-    PROD --> SAGE[Sage<br/>Requirements]
-    PROD --> NOVA[Nova<br/>UX Research]
-    PROD --> SIGNAL[Signal<br/>Analytics]
-    
-    OPS --> SENT[Sentinel<br/>Monitoring]
-    OPS --> AUD[Auditor<br/>Compliance]
-    OPS --> RESP[Responder<br/>Incidents]
-    
-    style CEO fill:#FFD700
-    style ENG fill:#4CAF50
-    style GROWTH fill:#2196F3
-    style PROD fill:#9C27B0
-    style OPS fill:#FF5722
+### Backend (.env)
+```env
+DATABASE_URL=postgresql://localhost:5432/mission_control
+REDIS_URL=redis://localhost:6379
+OPENCLAW_GATEWAY_URL=ws://127.0.0.1:18789
 ```
 
-## 🔄 Future Enhancements
+### Frontend
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
 
-### When OpenClaw WebSocket API is Available
-- [ ] Real-time task updates via WebSocket
-- [ ] Live agent status changes
-- [ ] Dynamic agent discovery
-- [ ] Task completion notifications
+## Testing
 
-### Maintaining OpenClaw Native Approach
-- [ ] Never add task creation to UI
-- [ ] Never implement custom routing
-- [ ] Always defer to OpenClaw for logic
-- [ ] Keep as read-only dashboard
+```bash
+# Backend tests
+cd backend
+python test_api.py
 
-## 🤝 Contributing
+# Frontend
+npm test
+```
 
-When contributing, please maintain our core principles:
-1. **Stay OpenClaw native** - Don't add custom engines
-2. **Read-only focus** - Visualization and monitoring only
-3. **Cloud-ready** - No local file dependencies
-4. **Static when possible** - Reduce API dependencies
+## Documentation
 
-## 📝 License
+- [Setup Guide](docs/SETUP_GUIDE.md) - Complete installation instructions
+- [OpenClaw Bridge](docs/OPENCLAW_BRIDGE.md) - Integration specification
+- [Infrastructure](infra/README.md) - Deployment and operations
 
-MIT License - See LICENSE file for details
+## Contributing
 
-## 🙏 Acknowledgments
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Open Pull Request
 
-- Built for [OpenClaw](https://openclaw.ai) agent orchestration
-- Uses Next.js 14 with App Router
-- Tailwind CSS for styling
-- React Icons for UI elements
+## License
 
----
+MIT License - See LICENSE file
 
-**Remember**: Mission Control is a window into your OpenClaw system, not a control panel. All agent management and task routing happens through OpenClaw's native tools. We visualize, we don't customize!
+## Support
 
-🦞 **Keep it native, keep it simple, keep it OpenClaw!**
+- Issues: https://github.com/yourusername/mission-control/issues
+- Documentation: /docs
+- OpenClaw: https://openclaw.ai

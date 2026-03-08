@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (metadata only)
+  postgres:
+    image: postgres:16-alpine
+    container_name: mission_control_db
+    environment:
+      POSTGRES_DB: mission_control
+      POSTGRES_USER: mission_control
+      POSTGRES_PASSWORD: mission_control
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mission_control"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis (for SSE pub/sub and caching)
+  redis:
+    image: redis:7-alpine
+    container_name: mission_control_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API (FastAPI)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mission_control_backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://mission_control:mission_control@postgres:5432/mission_control
+      SYNC_DATABASE_URL: postgresql://mission_control:mission_control@postgres:5432/mission_control
+      REDIS_URL: redis://redis:6379/0
+      OPENCLAW_GATEWAY_URL: ws://host.docker.internal:18789
+      OPENCLAW_API_URL: http://host.docker.internal:18789
+      ENVIRONMENT: docker
+      LOG_LEVEL: INFO
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mission_control_frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_PUBLIC_SSE_URL: http://localhost:8000/api/v1/stream
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+
+  # Database migrations
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mission_control_migrate
+    environment:
+      DATABASE_URL: postgresql://mission_control:mission_control@postgres:5432/mission_control
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: alembic upgrade head
+    restart: "no"
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: mission_control_network
