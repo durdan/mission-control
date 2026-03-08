@@ -14,8 +14,14 @@ from fastapi.responses import JSONResponse
 
 from core.config import settings
 from api import agents, tasks, jobs, events, approvals, fleets
+from api.v3 import router as v3_router
 from services.event_manager import event_manager
 from services.openclaw_adapter import openclaw_adapter
+from services.cluster_manager import cluster_manager
+from services.workflow_engine import workflow_engine
+from services.resource_provisioner import resource_provisioner
+from services.rbac_manager import rbac_manager
+from services.metrics_collector import metrics_collector
 
 # Configure logging
 logging.basicConfig(
@@ -31,8 +37,16 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     
-    # Initialize event manager
+    # Initialize V2 services
     await event_manager.start()
+    
+    # Initialize V3 services
+    logger.info("Initializing V3 services...")
+    await cluster_manager.start()
+    await workflow_engine.start()
+    await resource_provisioner.start()
+    await rbac_manager.initialize()
+    await metrics_collector.start()
     
     # Connect to OpenClaw gateway (listen-only)
     # await openclaw_adapter.connect_websocket()
@@ -41,6 +55,14 @@ async def lifespan(app: FastAPI):
     
     # Shutdown
     logger.info("Shutting down Mission Control")
+    
+    # Stop V3 services
+    await metrics_collector.stop()
+    await resource_provisioner.stop()
+    await workflow_engine.stop()
+    await cluster_manager.stop()
+    
+    # Stop V2 services
     await event_manager.stop()
     await openclaw_adapter.close()
 
@@ -75,12 +97,17 @@ async def health():
 
 
 # Include API routers
+
+# V1 API (backwards compatible)
 app.include_router(agents.router, prefix="/api/v1/agents", tags=["agents"])
 app.include_router(fleets.router, prefix="/api/v1/fleets", tags=["fleets"])
 app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
 app.include_router(jobs.router, prefix="/api/v1/jobs", tags=["jobs"])
 app.include_router(events.router, prefix="/api/v1/events", tags=["events"])
 app.include_router(approvals.router, prefix="/api/v1/approvals", tags=["approvals"])
+
+# V3 API (enterprise features)
+app.include_router(v3_router.router)
 
 
 # SSE endpoint for live updates
