@@ -4,7 +4,7 @@ Aggregates all V3 API endpoints
 """
 
 from fastapi import APIRouter
-from api.v3 import clusters, resources, rbac, metrics
+from api.v3 import clusters, resources, rbac, metrics, workflows
 
 # Create main V3 router
 router = APIRouter(prefix="/api/v3")
@@ -14,6 +14,7 @@ router.include_router(clusters.router, prefix="/clusters", tags=["Clusters"])
 router.include_router(resources.router, prefix="/resources", tags=["Resources"])
 router.include_router(rbac.router, prefix="/rbac", tags=["RBAC"])
 router.include_router(metrics.router, prefix="/metrics", tags=["Metrics"])
+router.include_router(workflows.router, prefix="/workflows", tags=["Workflows"])
 
 
 @router.get("/")

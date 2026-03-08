@@ -26,50 +26,47 @@ export function WorkflowsDashboard() {
 
   const fetchWorkflows = async () => {
     try {
-      // Mock data for now - would fetch from API
-      setWorkflows([
-        {
-          id: 'wf-1',
-          template: 'resource-approval',
-          status: 'running',
-          current_step: 'manager-approval',
-          started_at: new Date().toISOString(),
-          steps_completed: 1,
-          steps_total: 3
-        },
-        {
-          id: 'wf-2',
-          template: 'deployment-approval',
-          status: 'completed',
-          current_step: 'done',
-          started_at: new Date(Date.now() - 3600000).toISOString(),
-          completed_at: new Date().toISOString(),
-          steps_completed: 4,
-          steps_total: 4
-        }
-      ]);
+      // Fetch active workflows from API
+      const workflowsResponse = await fetch('http://localhost:8001/api/v3/workflows/active');
+      if (workflowsResponse.ok) {
+        const workflowsData = await workflowsResponse.json();
+        setWorkflows(workflowsData.workflows || []);
+      } else {
+        // If API not available, show empty state
+        setWorkflows([]);
+      }
 
-      setTemplates([
-        {
-          name: 'resource-approval',
-          description: 'Approval for resource provisioning',
-          steps: 3
-        },
-        {
-          name: 'deployment-approval',
-          description: 'Multi-stage deployment approval',
-          steps: 4
-        },
-        {
-          name: 'emergency-change',
-          description: 'Fast-track emergency changes',
-          steps: 2
-        }
-      ]);
+      // Fetch workflow templates
+      const templatesResponse = await fetch('http://localhost:8001/api/v3/workflows/templates');
+      if (templatesResponse.ok) {
+        const templatesData = await templatesResponse.json();
+        setTemplates(templatesData.templates || []);
+      } else {
+        // Default templates if API not available
+        setTemplates([
+          {
+            name: 'resource-approval',
+            description: 'Approval for resource provisioning',
+            steps: 3
+          },
+          {
+            name: 'deployment-approval',
+            description: 'Multi-stage deployment approval',
+            steps: 4
+          },
+          {
+            name: 'emergency-change',
+            description: 'Fast-track emergency changes',
+            steps: 2
+          }
+        ]);
+      }
 
       setLoading(false);
     } catch (err) {
       console.error('Error fetching workflows:', err);
+      setWorkflows([]);
+      setTemplates([]);
       setLoading(false);
     }
   };
