@@ -1,0 +1,52 @@
+{
+  "tasks": [
+    {
+      "id": "task-001",
+      "title": "Build agent registry",
+      "status": "done",
+      "priority": "high",
+      "assignedTo": "Chotu",
+      "project": "Mission Control"
+    },
+    {
+      "id": "task-002",
+      "title": "Create dashboard UI",
+      "status": "doing",
+      "priority": "high",
+      "assignedTo": "Chotu",
+      "project": "Mission Control"
+    },
+    {
+      "id": "task-003",
+      "title": "Add agent detail view",
+      "status": "todo",
+      "priority": "medium",
+      "assignedTo": null,
+      "project": "Mission Control"
+    },
+    {
+      "id": "task-004",
+      "title": "Build Kanban board",
+      "status": "doing",
+      "priority": "high",
+      "assignedTo": "Chotu",
+      "project": "Mission Control"
+    },
+    {
+      "id": "task-005",
+      "title": "Add monitoring page",
+      "status": "todo",
+      "priority": "medium",
+      "assignedTo": null,
+      "project": "Mission Control"
+    },
+    {
+      "id": "task-006",
+      "title": "Install shadcn/ui",
+      "status": "blocked",
+      "priority": "low",
+      "assignedTo": null,
+      "project": "Mission Control"
+    }
+  ]
+}

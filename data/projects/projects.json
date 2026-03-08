@@ -1,0 +1,40 @@
+{
+  "projects": [
+    {
+      "id": "mission-control",
+      "name": "Mission Control Dashboard",
+      "status": "in-progress",
+      "progress": 60,
+      "tasksOpen": 12,
+      "tasksDone": 24,
+      "tasksBlocked": 3,
+      "teamSize": 1,
+      "nextMilestone": "Beta Launch",
+      "milestoneDue": "2026-03-15"
+    },
+    {
+      "id": "ecommerce-platform",
+      "name": "E-commerce Platform",
+      "status": "planning",
+      "progress": 15,
+      "tasksOpen": 45,
+      "tasksDone": 8,
+      "tasksBlocked": 0,
+      "teamSize": 0,
+      "nextMilestone": "Requirements Complete",
+      "milestoneDue": "2026-03-20"
+    },
+    {
+      "id": "mobile-app",
+      "name": "Mobile App (iOS/Android)",
+      "status": "not-started",
+      "progress": 0,
+      "tasksOpen": 0,
+      "tasksDone": 0,
+      "tasksBlocked": 0,
+      "teamSize": 0,
+      "nextMilestone": "Kickoff",
+      "milestoneDue": "2026-04-01"
+    }
+  ]
+}

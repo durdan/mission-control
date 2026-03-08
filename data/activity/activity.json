@@ -1,0 +1,25 @@
+{
+  "activities": [
+    {
+      "id": "act-001",
+      "timestamp": "2026-03-05T12:38:00Z",
+      "agent": "Chotu",
+      "action": "Started building Mission Control dashboard",
+      "type": "task-start"
+    },
+    {
+      "id": "act-002",
+      "timestamp": "2026-03-05T12:00:00Z",
+      "agent": "Chotu",
+      "action": "Initialized Next.js project",
+      "type": "task-complete"
+    },
+    {
+      "id": "act-003",
+      "timestamp": "2026-03-05T11:30:00Z",
+      "agent": "Chotu",
+      "action": "Set up OpenClaw environment",
+      "type": "system"
+    }
+  ]
+}

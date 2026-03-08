@@ -1,0 +1,124 @@
+{
+  "agents": [
+    {
+      "id": "chotu-coordinator",
+      "name": "Chotu",
+      "role": "Coordinator & Tech Lead",
+      "status": "active",
+      "currentTask": "Building Mission Control dashboard",
+      "lastActive": "2026-03-05T12:38:00Z",
+      "tasksCompleted": 1,
+      "cost": 0.45
+    },
+    {
+      "id": "project-manager",
+      "name": "Project Manager",
+      "role": "Planning & Coordination",
+      "status": "idle",
+      "currentTask": null,
+      "lastActive": null,
+      "tasksCompleted": 0,
+      "cost": 0
+    },
+    {
+      "id": "product-manager",
+      "name": "Product Manager",
+      "role": "Requirements & Prioritization",
+      "status": "idle",
+      "currentTask": null,
+      "lastActive": null,
+      "tasksCompleted": 0,
+      "cost": 0
+    },
+    {
+      "id": "ui-ux-designer",
+      "name": "UI/UX Designer",
+      "role": "Design & User Experience",
+      "status": "idle",
+      "currentTask": null,
+      "lastActive": null,
+      "tasksCompleted": 0,
+      "cost": 0
+    },
+    {
+      "id": "frontend-developer",
+      "name": "Frontend Developer",
+      "role": "React & UI Development",
+      "status": "idle",
+      "currentTask": null,
+      "lastActive": null,
+      "tasksCompleted": 0,
+      "cost": 0
+    },
+    {
+      "id": "backend-developer",
+      "name": "Backend Developer",
+      "role": "APIs & Server Logic",
+      "status": "idle",
+      "currentTask": null,
+      "lastActive": null,
+      "tasksCompleted": 0,
+      "cost": 0
+    },
+    {
+      "id": "ios-developer",
+      "name": "iOS Developer",
+      "role": "Swift & iOS Development",
+      "status": "idle",
+      "currentTask": null,
+      "lastActive": null,
+      "tasksCompleted": 0,
+      "cost": 0
+    },
+    {
+      "id": "android-developer",
+      "name": "Android Developer",
+      "role": "Kotlin & Android Development",
+      "status": "idle",
+      "currentTask": null,
+      "lastActive": null,
+      "tasksCompleted": 0,
+      "cost": 0
+    },
+    {
+      "id": "qa-manual",
+      "name": "QA Engineer (Manual)",
+      "role": "Manual Testing & QA",
+      "status": "idle",
+      "currentTask": null,
+      "lastActive": null,
+      "tasksCompleted": 0,
+      "cost": 0
+    },
+    {
+      "id": "qa-automation",
+      "name": "QA Engineer (Automation)",
+      "role": "Test Automation",
+      "status": "idle",
+      "currentTask": null,
+      "lastActive": null,
+      "tasksCompleted": 0,
+      "cost": 0
+    },
+    {
+      "id": "devops-engineer",
+      "name": "DevOps Engineer",
+      "role": "CI/CD & Deployment",
+      "status": "idle",
+      "currentTask": null,
+      "lastActive": null,
+      "tasksCompleted": 0,
+      "cost": 0
+    },
+    {
+      "id": "security-engineer",
+      "name": "Security Engineer",
+      "role": "Security & Compliance",
+      "status": "idle",
+      "currentTask": null,
+      "lastActive": null,
+      "tasksCompleted": 0,
+      "cost": 0
+    }
+  ]
+}
