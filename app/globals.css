@@ -1,26 +1,82 @@
 @import "tailwindcss";
 
 :root {
+  /* Light mode colors */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0a0a0a;
+  
+  /* Dark mode colors - HIGH CONTRAST for visibility */
+  --dark-bg-primary: #0a0a0a;
+  --dark-bg-secondary: #1a1a1a;
+  --dark-bg-tertiary: #262626;
+  --dark-border: #404040;
+  
+  /* Text colors - HIGH CONTRAST */
+  --dark-text-primary: #ffffff;
+  --dark-text-secondary: #e5e5e5;
+  --dark-text-tertiary: #a3a3a3;
+  --dark-text-muted: #737373;
+  
+  /* Status colors */
+  --status-active: #10b981;
+  --status-busy: #f59e0b;
+  --status-idle: #6b7280;
+  --status-error: #ef4444;
+  
+  /* Fonts */
+  --font-geist-sans: 'GeistSans', system-ui, -apple-system, sans-serif;
+  --font-geist-mono: 'GeistMono', 'SF Mono', Consolas, monospace;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--dark-bg-primary);
+  --color-foreground: var(--dark-text-primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Global styles */
+body {
+  background: var(--dark-bg-primary);
+  color: var(--dark-text-primary);
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Ensure all text is visible */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--dark-text-primary);
+  font-weight: bold;
 }
+
+p {
+  color: var(--dark-text-secondary);
+}
+
+/* Card components */
+.card {
+  background: var(--dark-bg-secondary);
+  border: 1px solid var(--dark-border);
+  color: var(--dark-text-primary);
+}
+
+.card-hover:hover {
+  background: var(--dark-bg-tertiary);
+  border-color: #525252;
+}
+
+/* Text utilities */
+.text-primary { color: var(--dark-text-primary) !important; }
+.text-secondary { color: var(--dark-text-secondary) !important; }
+.text-tertiary { color: var(--dark-text-tertiary) !important; }
+.text-muted { color: var(--dark-text-muted) !important; }
+
+/* Background utilities */
+.bg-primary { background: var(--dark-bg-primary) !important; }
+.bg-secondary { background: var(--dark-bg-secondary) !important; }
+.bg-tertiary { background: var(--dark-bg-tertiary) !important; }
+
+/* Status indicators */
+.status-active { color: var(--status-active); }
+.status-busy { color: var(--status-busy); }
+.status-idle { color: var(--status-idle); }
+.status-error { color: var(--status-error); }
