@@ -6,6 +6,8 @@
 
 Mission Control provides a metadata and visualization layer for OpenClaw agents while maintaining strict separation of concerns. OpenClaw owns runtime execution; Mission Control owns metadata and coordination.
 
+**🚀 V3 Production Ready** - See [PRODUCTION_READY.md](PRODUCTION_READY.md) for deployment checklist.
+
 ## 🚀 Quick Start
 
 ```bash
