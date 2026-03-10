@@ -2,11 +2,13 @@
 
 import { useAgentData } from '@/hooks/useAgentData';
 import { useState } from 'react';
-import { FiSend, FiPlus, FiActivity, FiCpu } from 'react-icons/fi';
+import { FiSend, FiPlus, FiActivity, FiCpu, FiKey, FiSettings } from 'react-icons/fi';
+import EnrollmentModal from '@/components/EnrollmentModal';
 
 export default function Home() {
   const { agents, tasks, activities, hierarchy, connected, createTask } = useAgentData();
   const [showTaskModal, setShowTaskModal] = useState(false);
+  const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
   const [taskDescription, setTaskDescription] = useState('');
   const [taskPriority, setTaskPriority] = useState('P2');
 
@@ -46,6 +48,22 @@ export default function Home() {
     }
   };
 
+  const handleEnroll = async (token: string) => {
+    const response = await fetch('http://localhost:3001/api/enroll', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token })
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Enrollment failed');
+    }
+    
+    // Reconnect after successful enrollment
+    window.location.reload();
+  };
+
   return (
     <div className="p-8 bg-primary">
       <div className="flex justify-between items-center mb-8">
@@ -61,6 +79,13 @@ export default function Home() {
             <span className="text-xs text-secondary">{connected ? 'Connected' : 'Disconnected'}</span>
           </div>
           <button
+            onClick={() => setShowEnrollmentModal(true)}
+            className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-lg flex items-center gap-2"
+            title="Configure OpenClaw Gateway Token"
+          >
+            <FiKey className="w-4 h-4" />
+          </button>
+          <button
             onClick={() => setShowTaskModal(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
           >
@@ -72,15 +97,11 @@ export default function Home() {
       {/* Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
         <div className="card card-hover rounded-lg p-6">
-          <div className="text-tertiary text-sm mb-2">Orchestrators</div>
-          <div className="text-3xl font-bold text-primary">{orchestrators.length}</div>
+          <div className="text-tertiary text-sm mb-2">Sessions</div>
+          <div className="text-3xl font-bold text-primary">{agents.length}</div>
         </div>
         <div className="card card-hover rounded-lg p-6">
-          <div className="text-tertiary text-sm mb-2">Specialists</div>
-          <div className="text-3xl font-bold text-primary">{specialists.length}</div>
-        </div>
-        <div className="card card-hover rounded-lg p-6">
-          <div className="text-tertiary text-sm mb-2">Active</div>
+          <div className="text-tertiary text-sm mb-2">Active Agents</div>
           <div className="text-3xl font-bold status-active">{activeAgents}</div>
         </div>
         <div className="card card-hover rounded-lg p-6">
@@ -88,8 +109,70 @@ export default function Home() {
           <div className="text-3xl font-bold text-primary">{totalTasks}</div>
         </div>
         <div className="card card-hover rounded-lg p-6">
+          <div className="text-tertiary text-sm mb-2">Models</div>
+          <div className="text-3xl font-bold text-primary">{new Set(agents.map(a => a.model?.split('/')[0])).size}</div>
+        </div>
+        <div className="card card-hover rounded-lg p-6">
           <div className="text-tertiary text-sm mb-2">Cost</div>
           <div className="text-3xl font-bold text-primary">${totalCost.toFixed(2)}</div>
+        </div>
+      </div>
+
+      {/* Active Sessions Section */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold mb-4 text-primary">Active Sessions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {agents.map(agent => (
+            <div key={agent.id} className="card rounded-lg p-6 border-l-4 border-green-500">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h3 className="text-lg font-bold text-primary">{agent.name || 'Agent'}</h3>
+                  <p className="text-sm text-secondary">Session: {agent.id?.slice(0, 8)}...</p>
+                </div>
+                <span className="px-2 py-1 bg-green-900 text-green-300 text-xs rounded-full">
+                  {agent.status}
+                </span>
+              </div>
+              
+              {agent.model && (
+                <div className="mb-3">
+                  <span className="text-xs text-tertiary">Model:</span>
+                  <span className="text-sm text-primary ml-2">{agent.model}</span>
+                </div>
+              )}
+              
+              {agent.session && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-tertiary">Type:</span>
+                    <span className="text-primary">{agent.session.kind}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-tertiary">Key:</span>
+                    <span className="text-primary font-mono text-xs">{agent.session.key}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-tertiary">Age:</span>
+                    <span className="text-primary">{agent.session.age}</span>
+                  </div>
+                  {agent.session.raw && agent.session.raw.includes('k/') && (
+                    <div className="mt-3 pt-3 border-t border-gray-700">
+                      <div className="text-xs text-tertiary mb-1">Token Usage:</div>
+                      <div className="text-sm font-mono text-primary">
+                        {agent.session.raw.match(/\d+k\/\d+k \(\d+%\)/)?.[0] || 'N/A'}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+          
+          {agents.length === 0 && (
+            <div className="col-span-2 text-center py-8 text-tertiary">
+              No active sessions. Run `openclaw task "your task"` to start an agent.
+            </div>
+          )}
         </div>
       </div>
 
@@ -228,6 +311,14 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Enrollment Modal */}
+      <EnrollmentModal
+        isOpen={showEnrollmentModal}
+        onClose={() => setShowEnrollmentModal(false)}
+        onEnroll={handleEnroll}
+        currentStatus={connected ? 'Connected to OpenClaw Gateway' : 'Not connected - Token may be invalid'}
+      />
     </div>
   );
 }

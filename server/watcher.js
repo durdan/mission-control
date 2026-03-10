@@ -24,6 +24,10 @@ class OpenClawWatcher {
       '/Users/durdan/.openclaw/workspace/**/*.json',
       '/Users/durdan/.openclaw/workspace/**/*.md',
       
+      // Session files - IMPORTANT for seeing active agents
+      '/Users/durdan/.openclaw/agents/*/sessions/sessions.json',
+      '/Users/durdan/.openclaw/agents/*/sessions/*.jsonl',
+      
       // Agent workspaces
       '/Users/durdan/.openclaw/marketing/*/inbox/*.json',
       '/Users/durdan/.openclaw/marketing/*/memory/*.md',

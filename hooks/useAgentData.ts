@@ -124,6 +124,29 @@ export function useAgentData() {
 
   const handleWebSocketMessage = (data: any) => {
     switch (data.type) {
+      case 'connected':
+        console.log('✅ WebSocket connected to OpenClaw Bridge');
+        break;
+        
+      case 'update':
+        // Handle real-time session updates from OpenClaw bridge
+        if (data.data && data.data.sessions) {
+          const updatedAgents = data.data.sessions.map((session: any) => ({
+            id: session.id,
+            name: session.key.split(':').pop() || session.key,
+            role: session.kind,
+            status: 'active',
+            type: session.kind === 'direct' ? 'specialist' : 'orchestrator',
+            model: session.model,
+            session: session,
+            tasksCompleted: 0,
+            cost: 0
+          }));
+          setAgents(updatedAgents);
+          console.log('📊 Updated agents from sessions:', updatedAgents);
+        }
+        break;
+        
       case 'initial':
         if (data.agents) setAgents(data.agents);
         if (data.taskQueue) setTasks(data.taskQueue);

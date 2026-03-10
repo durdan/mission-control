@@ -1,52 +1,76 @@
 # Mission Control 🎯
 
-> **OpenClaw-native metadata and coordination layer - V2 Production Ready**
+> **Real-time Dashboard for OpenClaw Agent Sessions - V3 Production Ready**
 
 ## Overview
 
-Mission Control provides a metadata and visualization layer for OpenClaw agents while maintaining strict separation of concerns. OpenClaw owns runtime execution; Mission Control owns metadata and coordination.
+Mission Control provides a modern, real-time dashboard for monitoring and managing OpenClaw agent sessions. It offers full visibility into your AI agent ecosystem with live session tracking, token usage monitoring, and gateway enrollment management.
 
-**🚀 V3 Production Ready** - See [PRODUCTION_READY.md](PRODUCTION_READY.md) for deployment checklist.
+**🚀 V3 Production Ready** - Fully integrated with OpenClaw CLI for independent operation.
+
+## ✨ Key Features
+
+### 🎯 Real-Time Session Monitoring
+- **Live Session Tracking**: View all active OpenClaw sessions with automatic updates
+- **Token Usage Display**: Monitor token consumption (e.g., "37k/164k - 23%")
+- **Model Information**: See which AI models each agent is using
+- **Session Metadata**: Age, type, status, and unique identifiers
+
+### 🔌 OpenClaw Bridge API  
+- **Independent Architecture**: Works with OpenClaw anywhere (local/remote)
+- **CLI Integration**: Translates OpenClaw CLI commands to REST APIs
+- **WebSocket Updates**: Real-time updates every 5 seconds
+- **No File Dependency**: Uses OpenClaw CLI, not direct file access
+
+### 🔑 Token Management
+- **Gateway Enrollment UI**: Update OpenClaw tokens from the dashboard
+- **Secure Entry**: Password-protected token input
+- **Auto-Reconnection**: Seamless reconnection after token updates
+- **Help Integration**: Built-in command reference
 
 ## 🚀 Quick Start
 
 ```bash
-# Clone repository
+# Prerequisites
+# - Node.js 18+ and npm installed
+# - OpenClaw CLI installed and configured
+# - OpenClaw gateway running (openclaw gateway status)
+
+# Clone and install
 git clone https://github.com/yourusername/mission-control.git
 cd mission-control
-
-# Start Frontend (V1 Dashboard)
 npm install
-npm run dev
-# Visit http://localhost:3000
+npm install http-proxy-middleware
 
-# Start Backend (V2 API)
-cd backend
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python main_test.py
-# Visit http://localhost:8001/docs
+# Start the dashboard (Terminal 1)
+npm run dev
+
+# Start the Bridge API (Terminal 2)  
+node server/openclaw-bridge.js
+
+# Access the dashboard
+# Open http://localhost:3000 in your browser
 ```
 
-## Architecture Evolution
+## 🏗️ Architecture
 
-### V1: Read-Only Dashboard ✅
-- Visualization of OpenClaw agents
-- Static configuration
-- WebSocket monitoring
-- **Status: Complete**
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│   Next.js UI    │────▶│  Bridge API      │────▶│  OpenClaw CLI   │
+│  (Port 3000)    │◀────│  (Port 3001)     │◀────│   (Gateway)     │
+└─────────────────┘     └──────────────────┘     └─────────────────┘
+         │                       │
+         │                       │
+         ▼                       ▼
+    WebSocket               REST API
+   (Port 3002)             Endpoints
+```
 
-### V2: Metadata & Coordination ✅
-- FastAPI backend with PostgreSQL
-- Task → Job → Session model
-- SSE event streaming
-- OpenClaw adapter pattern
-- **Status: Complete**
-
-### V3: Enterprise Features ✅
-- Multi-cluster management with load balancing
-- Advanced approval workflows
+### Components
+- **Next.js Dashboard**: Modern React UI with real-time updates
+- **Bridge API**: Node.js server that wraps OpenClaw CLI commands
+- **WebSocket Server**: Pushes live session updates to the UI
+- **OpenClaw Integration**: Works with any OpenClaw instance via CLI
 - Resource provisioning system
 - RBAC security model
 - Real-time metrics and monitoring
