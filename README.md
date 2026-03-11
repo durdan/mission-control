@@ -8,6 +8,12 @@ Mission Control provides a modern, real-time dashboard for monitoring and managi
 
 **🚀 V3 Production Ready** - Fully integrated with OpenClaw CLI for independent operation.
 
+### Implementation Approach
+
+This is a **lightweight monitoring dashboard** for OpenClaw, designed for individual developers and small teams. It uses a CLI-bridge pattern to wrap OpenClaw commands as REST APIs, providing real-time visibility without requiring direct gateway integration.
+
+For enterprise-grade OpenClaw operations with full gateway control, governance, and multi-tenancy, see the [Gap Analysis](docs/GAP_ANALYSIS.md) comparing our approach with abhi1693/openclaw-mission-control.
+
 ## ✨ Key Features
 
 ### 🎯 Real-Time Session Monitoring
@@ -269,6 +275,7 @@ npm test
 - [Setup Guide](docs/SETUP_GUIDE.md) - Complete installation instructions
 - [OpenClaw Bridge](docs/OPENCLAW_BRIDGE.md) - Integration specification
 - [Infrastructure](infra/README.md) - Deployment and operations
+- [Gap Analysis](docs/GAP_ANALYSIS.md) - Comparison with abhi1693/openclaw-mission-control
 
 ## Contributing
 
