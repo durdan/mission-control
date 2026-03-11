@@ -41,7 +41,9 @@ export function ClusterDashboard() {
 
   const fetchClusters = async () => {
     try {
-      const response = await fetch('http://localhost:8001/api/v3/clusters');
+      // Check if we're in demo mode
+      const isDemoMode = localStorage.getItem('demoMode') !== 'false';
+      const response = await fetch(`http://localhost:8001/api/v3/clusters?demo=${isDemoMode}`);
       if (!response.ok) throw new Error('Failed to fetch clusters');
       const data = await response.json();
       setClusters(data);

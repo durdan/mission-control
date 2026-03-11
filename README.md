@@ -12,7 +12,7 @@ Mission Control provides a modern, real-time dashboard for monitoring and managi
 
 ### 🎯 Real-Time Session Monitoring
 - **Live Session Tracking**: View all active OpenClaw sessions with automatic updates
-- **Token Usage Display**: Monitor token consumption (e.g., "37k/164k - 23%")
+- **Token Usage Display**: Monitor token consumption (e.g., "33k/164k - 20.18%")
 - **Model Information**: See which AI models each agent is using
 - **Session Metadata**: Age, type, status, and unique identifiers
 
@@ -28,11 +28,19 @@ Mission Control provides a modern, real-time dashboard for monitoring and managi
 - **Auto-Reconnection**: Seamless reconnection after token updates
 - **Help Integration**: Built-in command reference
 
+### 🔄 Demo Mode Toggle (NEW)
+- **Live/Demo Data Switch**: Toggle between real OpenClaw data and demo data
+- **Visual Indicators**: Orange "DEMO MODE" badge for demo, green indicator for live
+- **Persistent Preference**: Saves your choice in localStorage
+- **Clear Data Labels**: "📊 DEMO:" prefix for demo, "🦞 LIVE:" for real data
+- **Graceful Fallback**: Shows demo data when OpenClaw is unavailable
+
 ## 🚀 Quick Start
 
 ```bash
 # Prerequisites
 # - Node.js 18+ and npm installed
+# - Python 3.8+ for V3 backend
 # - OpenClaw CLI installed and configured
 # - OpenClaw gateway running (openclaw gateway status)
 
@@ -40,7 +48,6 @@ Mission Control provides a modern, real-time dashboard for monitoring and managi
 git clone https://github.com/yourusername/mission-control.git
 cd mission-control
 npm install
-npm install http-proxy-middleware
 
 # Start the dashboard (Terminal 1)
 npm run dev
@@ -48,8 +55,15 @@ npm run dev
 # Start the Bridge API (Terminal 2)  
 node server/openclaw-bridge.js
 
+# For V3 Enterprise Features (Terminal 3)
+cd backend
+python3 -m venv venv
+venv/bin/pip install -r requirements.txt
+venv/bin/python main_dev.py  # Development mode with SQLite
+
 # Access the dashboard
-# Open http://localhost:3000 in your browser
+# Main: http://localhost:3000
+# V3 Enterprise: http://localhost:3000/v3
 ```
 
 ## 🏗️ Architecture
@@ -196,13 +210,25 @@ Visit http://localhost:8000/docs for Swagger UI
 
 ### Local Development
 ```bash
-# Using Docker Compose
-docker-compose up -d
+# Frontend with Bridge API
+npm run dev                        # Next.js on port 3000
+node server/openclaw-bridge.js     # Bridge API on port 3001
 
-# Or run individually
-npm run dev           # Frontend
-python backend/main.py # Backend
+# V3 Backend (Development mode)
+cd backend
+venv/bin/python main_dev.py        # FastAPI on port 8001
+# Uses SQLite and in-memory storage - no PostgreSQL/Redis needed!
+
+# V3 Backend (Production mode) 
+docker-compose up -d                # Full stack with PostgreSQL & Redis
 ```
+
+### Demo Mode
+The dashboard includes a demo/live toggle in the top-right corner:
+- **Demo Mode**: Shows sample data for testing and exploration
+- **Live Mode**: Connects to real OpenClaw sessions
+- Toggle persists across sessions
+- Automatic fallback to demo when OpenClaw is unavailable
 
 ### Google Cloud Platform
 ```bash

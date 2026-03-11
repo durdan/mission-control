@@ -4,6 +4,7 @@ import { useAgentData } from '@/hooks/useAgentData';
 import { useState } from 'react';
 import { FiSend, FiPlus, FiActivity, FiCpu, FiKey, FiSettings } from 'react-icons/fi';
 import EnrollmentModal from '@/components/EnrollmentModal';
+import DemoModeToggle from '@/components/DemoModeToggle';
 
 export default function Home() {
   const { agents, tasks, activities, hierarchy, connected, createTask } = useAgentData();
@@ -66,6 +67,7 @@ export default function Home() {
 
   return (
     <div className="p-8 bg-primary">
+      <DemoModeToggle />
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-primary">Mission Control</h1>
         <div className="flex items-center gap-4">

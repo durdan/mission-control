@@ -61,7 +61,7 @@ class Fleet(Base, TimestampMixin):
     id = Column(String, primary_key=True)
     name = Column(String, nullable=False, unique=True)
     description = Column(Text)
-    metadata = Column(JSON, default={})
+    meta_data = Column(JSON, default={})  # Renamed from metadata to avoid SQLAlchemy conflict
     
     # Relationships
     agents = relationship("Agent", back_populates="fleet")
@@ -109,7 +109,7 @@ class PromptTemplate(Base, TimestampMixin):
     name = Column(String, nullable=False)
     template = Column(Text, nullable=False)
     variables = Column(JSON, default=[])
-    metadata = Column(JSON, default={})
+    meta_data = Column(JSON, default={})  # Renamed from metadata to avoid SQLAlchemy conflict
     
     # Relationships
     agents = relationship("Agent", back_populates="prompt_template")
@@ -127,7 +127,7 @@ class Board(Base, TimestampMixin):
     name = Column(String, nullable=False)
     description = Column(Text)
     fleet_id = Column(String, ForeignKey("fleets.id"))
-    metadata = Column(JSON, default={})
+    meta_data = Column(JSON, default={})  # Renamed from metadata to avoid SQLAlchemy conflict
     
     # Relationships
     columns = relationship("BoardColumn", back_populates="board", cascade="all, delete-orphan")
@@ -174,7 +174,7 @@ class Task(Base, TimestampMixin):
     assigned_agent_id = Column(String, ForeignKey("agents.id"), nullable=True)
     
     # Metadata
-    metadata = Column(JSON, default={})
+    meta_data = Column(JSON, default={})  # Renamed from metadata to avoid SQLAlchemy conflict
     
     # Relationships
     board = relationship("Board", back_populates="tasks")
@@ -265,7 +265,7 @@ class Artifact(Base, TimestampMixin):
     path = Column(String)  # Reference to file location
     size = Column(Integer)
     mime_type = Column(String)
-    metadata = Column(JSON, default={})
+    meta_data = Column(JSON, default={})  # Renamed from metadata to avoid SQLAlchemy conflict
     
     # Relationships
     job = relationship("Job", back_populates="artifacts")
@@ -319,7 +319,7 @@ class Approval(Base, TimestampMixin):
     requester = Column(String)
     approver = Column(String)
     reason = Column(Text)
-    metadata = Column(JSON, default={})
+    meta_data = Column(JSON, default={})  # Renamed from metadata to avoid SQLAlchemy conflict
     
     # Timing
     requested_at = Column(DateTime(timezone=True), server_default=func.now())
